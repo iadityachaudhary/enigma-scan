@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku</title>
+    <script src="https://superal.github.io/canvas2image/canvas2image.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        main {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+            margin: 0;
+        }
+
+        .sudoku-form {
+            background-color: rgba(0, 0, 0, 0.982);
+            border: 1px solid  #ff6b00; 
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 20px 1px #ff6b00;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+ 
+            color: white;
+        }
+
+        /* Thick border style for 3x3 grid */
+        td:nth-child(3n),
+        td:nth-child(6n) {
+            border-right: 3px solid #ffffff;
+        }
+
+        tr:nth-child(3n) td {
+            border-bottom: 3px solid #ffffff;
+        }
+
+        input[type="text"] {
+            width: 96%;
+    height: 96%;
+    font-size: 25px;
+    text-align: center;
+    background-color: black;
+    color: #ffffff9c;
+        }
+
+        .submit-button,
+        .back-button {
+            display: block;
+            font-family: 'Comfortaa', sans-serif;
+
+            margin: auto;
+            margin-top: 20px;
+            width: 40%;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #ff6b0038;
+    color: #ffffffbd;
+border-radius: 4px;
+border: 1px solid #ff6b00; /* Add a white border at the bottom */
+cursor: pointer;
+        }
+
+        .submit-button:hover {
+background-color: #ff6b00;
+
+            /* box-shadow: 0px 0px 60px 1px #ff6b00; */
+            transform: scale(1.05);
+        }
+        .back-button:hover {
+background-color: #ff6b00;
+
+            /* box-shadow: 0px 0px 60px 1px #ff6b00; */
+            transform: scale(1.05);
+        }
+
+        form a {
+            text-decoration: none;
+        }
+        footer {
+text-align: center;
+padding: 30px;
+background: linear-gradient(90deg, #ff6b00, #271102); /* Gradient background */
+
+border-top: 1px solid #ff6b00; /* Add a white border at the bottom */
+color: #fff;
+font-family: 'Comfortaa', sans-serif;
+
+}
+
+#captureButton {
+    margin-top: 40vh;
+    width: 250px;
+    background-color: #ff6b0038;
+    color: #ffffffbd;
+    margin-left: -80px;
+}
+#captureButton:hover{
+background-color: #ff6b00;
+}
+    </style>
+</head>
+
+<body>
+    <main>
+
+    {% if success %}
+    <style>
+        main{
+            display: grid;
+            justify-content: center;
+            grid-template-columns: 70% 30%;
+        }
+        .sudoku-form{
+            width: 500px;
+            justify-content: center;
+            display: grid;
+        }
+        .result{
+            display: flex;
+    justify-content: center;
+        }
+        
+
+    </style>
+        
+    <div class="result">
+    <form class="sudoku-form" action="/sudokuSolve" method="post">
+        <table>
+            <h1
+                style="font-size: 24px; color: #ffffff; text-align: center; margin-top: 10px; margin-bottom: 20px; font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+                Here's your solved puzzle!</h1>
+            <tbody>
+                <!-- Create a dynamic Sudoku-like table with pre-populated values -->
+                {% for row in range(9) %}
+                <tr>
+                    {% for col in range(9) %}
+                    <td><input type="text" name="cell_{{ row }}_{{ col }}" value="{{ X[row][col] }}" maxlength="1"></td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/sudoku"><button class="back-button" type="button">Back to Home</button></a>
+    </form>
+
+</div>
+<button class="back-button" id="captureButton">Download as Image</button>
+    {% else %}
+    <div class="result">
+    <form class="sudoku-form" action="/sudokuSolve" method="post">
+        <!-- Add hidden input fields for rows and columns -->
+        <input type="hidden" name="rows" value="{{ 9 }}">
+        <input type="hidden" name="cols" value="{{ 9 }}">
+
+        <table>
+            <tbody>
+                <!-- Create a dynamic Sudoku-like table with pre-populated values -->
+                {% for row in range(9) %}
+                <tr>
+                    {% for col in range(9) %}
+                    <td><input type="text" name="cell_{{ row }}_{{ col }}" value="{{ X[row][col] }}" maxlength="1"></td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <input class="submit-button" type="submit" value="Submit">
+    </form>
+</div>
+    {% endif %}
+
+    </main>
+    <footer>
+        &copy; 2023 EnigmaScan Sudoku Solver
+    </footer>
+    <script>
+        document.getElementById('captureButton').addEventListener('click', function() {
+     html2canvas(document.querySelector('.result'), {
+       onrendered: function(canvas) {
+           var customName = 'Enigmascan_Solved_Sudoku'; // Specify your custom image name here
+           Canvas2Image.saveAsPNG(canvas, canvas.width, canvas.height, customName);
+       }
+     });
+   });
+</script>
+</body>
+
+</html>
